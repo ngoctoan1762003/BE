@@ -1,75 +1,68 @@
 const express = require('express');
 const user_router = express.Router();
 
-user_router.use(express.json())
-user_router.use(express.urlencoded())
+user_router.use(express.json());
+user_router.use(express.urlencoded({extended: true}));
 
 const validate = require('../middleware/validate')
+const connnection = require('../database/connection')
 
-let users = [
-    {
-      "id": 1,
-      "fullname": "Nguyen Huy Tuong",
-      "gender": true,
-      "age": 18
-    },
-    {
-      "id": 2,
-      "fullname": "Nguyen Thi Tuong",
-      "gender": false,
-      "age": 15
-    }
-  ]
+// let users = [
+//     {
+//       "id": 1,
+//       "fullname": "Nguyen Huy Tuong",
+//       "gender": true,
+//       "age": 18
+//     },
+//     {
+//       "id": 2,
+//       "fullname": "Nguyen Thi Tuong",
+//       "gender": false,
+//       "age": 15
+//     }
+//   ]
   
-
+let users
   user_router.get('/', (req, res) => {
-    res.status(200).send(users)
+    
+    connnection.query('select * from users', (err, result) => {
+      users = result;
+      res.status(200).send(users)
+    })
   })
   
   user_router.get('/:id', (req, res) => {
-    let result = users.filter(user => 
-      user.id.toString() === req.params.id
-      )
-    res.status(200).send(result)
+    connnection.query('select * from users where id=?', [req.params.id],(err, result) => {
+      users = result;
+      res.status(200).send(users)
+    })
   })
   
   user_router.put('/:id', validate, (req, res) => {
-    let index = 0
-    while (req.params.id !== users[index].id.toString()){
-      index++
-    }
-    users[index].fullname = req.body.fullname
-    users[index].gender = req.body.gender
-    users[index].age = req.body.age
-    res.status(204).send()
+    connnection.query(`update users set fullname = ?, gender = ?, age = ? where id = ?`, [req.body.fullname, req.body.gender, req.body.age, req.params.id],(err, result) => {
+      if(err){
+        return console.error(err.message)
+      }
+      res.status(204).send();
+    })
   })
   
   user_router.post('/', validate, (req, res) => {
-    let user = {
-      "id": users[users.length-1].id + 1,
-      "fullname": req.body.fullname,
-      "gender": req.body.gender,
-      "age": req.body.age
-    }
-    users.push(user)
-    res.status(201).send(users)
+    connnection.query(`insert into users (fullname, gender, age) values (?,?,?)`, [req.body.fullname, req.body.gender, req.body.age],(err, result) => {
+      if(err){
+        return console.error(err.message)
+      }
+      res.status(201).send();
+    })
   })
   
   user_router.delete('/:id', validate, (req, res) => {
-    let index = 0
-    while (req.params.id !== users[index].id.toString() && index < users.length){
-      index++
-      
-    }
-    if(index < users.length) 
-    {
-        users.splice(index, 1)
-        res.status(204).send()
-    }
-    else
-    {
-        res.status(404).send("Error")
-    }
+    connnection.query(`delete from users where id=?`, [req.params.id],(err, result) => {
+      if(err){
+        return console.error(err.message)
+      }
+      res.status(204).send();
+    })
   })
   // Exports cho biến user_router
 module.exports = user_router;
