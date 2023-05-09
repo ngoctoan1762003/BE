@@ -4,7 +4,7 @@ function validate(req, res, next)
     let numberFormat = /^[^0-9]+$/;
     // let  regex = /^[^\r\n0-9]+[1-9][0-9]*$/
 
-    if(req.body.age > 0 && req.body.fullname.length > 0 && format.test(req.body.fullname) == false && numberFormat.test(req.body.fullname))
+    if(req.body.age > 0 && req.body.name.length > 0 && format.test(req.body.name) == false && numberFormat.test(req.body.name))
     {
         next()
     }
@@ -12,7 +12,7 @@ function validate(req, res, next)
     {
         res.status(400).send("Nguoi am")
     }
-    else if(req.body.fullname.length < 0)
+    else if(req.body.name.length < 0)
     {
         res.status(400).send("Khong ten")
     }
@@ -28,7 +28,7 @@ function validateRegister(req, res, next)
     let emailFormat = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
     // let  regex = /^[^\r\n0-9]+[1-9][0-9]*$/
 
-    // if(req.body.age > 0 && req.body.username.length >= 3 && req.body.name.length >=2 && format.test(req.body.fullname) == false && numberFormat.test(req.body.fullname) && req.body.password.length >= 3 && emailFormat.test(req.body.email))
+    // if(req.body.age > 0 && req.body.username.length >= 3 && req.body.name.length >=2 && format.test(req.body.name) == false && numberFormat.test(req.body.name) && req.body.password.length >= 3 && emailFormat.test(req.body.email))
     // {
         
     // }

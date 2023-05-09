@@ -1,23 +1,21 @@
 const express = require('express');
 const crypto = require('crypto')
 const jsonwebtoken = require('jsonwebtoken')
-const auth_router= express.Router();
+const authRouter= express.Router();
 const secret = 'secret'
-auth_router.use(express.json());
-auth_router.use(express.urlencoded({extended: true}));
+authRouter.use(express.json());
+authRouter.use(express.urlencoded({extended: true}));
 
 const connnection = require('../database/connection')
 const { hashPasswordWithSalt, hashPasswordWithAvailableSalt } = require('../helper/hash')
 const validate = require('../middleware/validate');
-const { resolve } = require('path');
-const { rejects } = require('assert');
 
 const {
     publicKey,
     privateKey
 } = crypto.generateKeyPairSync('rsa', {modulusLength: 2048});
 
-auth_router.post('/register', validate.validateRegister,async (req, res, next) => {
+authRouter.post('/register', validate.validateRegister,async (req, res) => {
     const{
         username,
         password,
@@ -27,40 +25,45 @@ auth_router.post('/register', validate.validateRegister,async (req, res, next) =
         gender
     }   = req.body
 
-    await connnection.query('select * from users where username = ?', [username], (err, result) => {
-        if(err) {
-            return res.status(500).json({
-                message: "internal server error"
-            })
-        }
-
-        const user = result[0]
-        if(user){
-            return res.status(400).json({
-                message: "username is already taken"
-            })
-        }
-    })
-
-    const {
-        salt,
-        hashedPassword,
-    } = hashPasswordWithSalt(password)
-
-    //console.log(hashPassword, salt)
-
-    connnection.query('insert into users (username, password, name, age, gender, email, salt) values(?, ?, ?, ?, ?, ?, ?)', [username, hashedPassword, name, age, gender, email, salt], (err, result) => {
-        return res.status(200).json({
-            message: "Success"
+    await new Promise(() =>{
+        
+        connnection.query('select * from users where username = ?', [username], (err, result) => {
+            if(err) {
+                return res.status(500).json({
+                    message: "internal server error"
+                })
+            }
+    
+            const user = result[0]
+            if(user){
+                return res.status(400).json({
+                    message: "username is already taken"
+                })
+            }
+    
+    
         })
-      })
-
-    return res.status(401).json({
-        message: ' invalid credential'
+    
+        const {
+            salt,
+            hashedPassword,
+        } = hashPasswordWithSalt(password)
+    
+        //console.log(hashPassword, salt)
+    
+        connnection.query('insert into users (username, password, name, age, gender, email, salt) values(?, ?, ?, ?, ?, ?, ?)', [username, hashedPassword, name, age, gender, email, salt], (err, result) => {
+            return res.status(200).json({
+                message: "Success"
+            })
+          })
+    
+        return res.status(401).json({
+            message: ' invalid credential'
+        })
     })
 })
 
-auth_router.post('/login', async (req, res) => {
+authRouter.post('/login', async (req, res) => {
     const username = req.body.username
     const password = req.body.password
 
@@ -100,7 +103,7 @@ auth_router.post('/login', async (req, res) => {
                     expiresIn: '1h'
                 })
         
-                return res.status(201).json({
+                return res.status(200).json({
                     data: jwt,
                     message: 'Login success'
                 })  
@@ -119,5 +122,49 @@ auth_router.post('/login', async (req, res) => {
 
 })
 
-module.exports = auth_router;
+authRouter.get('/:id', async (req, res) => {
+    //get username from query string
+    const id = req.params.id
+    //get token from request
+    const authorizationHeader = req.headers.authorization //Bearer <Token>
+    console.log(authorizationHeader)
+    console.log(publicKey.export({ type: 'spki', format: 'pem' }));
+    console.log(privateKey.export({ type: 'pkcs8', format: 'pem' }));
+
+    //const userToken = authorizationHeader.substring(7) //cut 7 first char to get token
+    //console.log(userToken)
+
+    try{
+        //public decrypt instead of secret key
+        const isValidToken = jsonwebtoken.verify(authorizationHeader, publicKey)
+        username = isValidToken.username
+        console.log(username)
+        await new Promise(() => {
+            let users
+            let usernameRes
+            connnection.query('select * from users where id=?', [req.params.id],(err, result) => {
+                users = result[0];
+                usernameRes = users.username.toString()
+                console.log(users)
+                console.log(usernameRes)
+                if(usernameRes == username){
+                    return res.status(200).json({
+                        user: users
+                    })
+                }
+                else{
+                    return res.status(404).json({
+                        message: "Not authorized"
+                    })
+                }
+            })
+        })
+    }
+    catch(error){
+        return res.status(500).json({
+            message: error.message
+        })
+    }
+})
+module.exports = authRouter;
 

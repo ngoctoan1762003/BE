@@ -9,7 +9,7 @@ const authRoute = require('./routes/auth')
 // Dùng userRoute cho tất cả các route bắt đầu bằng '/users'
 app.use(express.json())
 app.use(express.urlencoded())
-//app.use('/users', userRoute);
+app.use('/users', userRoute);
 //app.use('/login', loginRoute);
 app.use('/auth', authRoute);
 
