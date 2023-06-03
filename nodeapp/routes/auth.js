@@ -8,62 +8,125 @@ authRouter.use(express.json());
 authRouter.use(express.urlencoded({extended: true}));
 
 const connnection = require('../database/connection')
+const connection2 = require('../database/knexConnection')
 const { hashPasswordWithSalt, hashPasswordWithAvailableSalt } = require('../helper/hash')
 const validate = require('../middleware/validate');
+const knex = require('../database/knexConnection');
+const pagination = require('../helper/pagination');
 
 const {
     publicKey,
     privateKey
 } = crypto.generateKeyPairSync('rsa', {modulusLength: 2048});
   
+//SQL raw-----------
+// authRouter.post('/register', validate.validateRegister,async (req, res) => {
+//     const{
+//         username,
+//         password,
+//         name,
+//         age,
+//         email,
+//         gender
+//     }   = req.body
+
+//     await new Promise(() =>{
+        
+//         connnection.query('select * from users where username = ?', [username], (err, result) => {
+//             if(err) {
+//                 return res.status(500).json({
+//                     message: "internal server error"
+//                 })
+//             }
+    
+//             const user = result[0]
+//             if(user){
+//                 return res.status(400).json({
+//                     message: "username is already taken"
+//                 })
+//             }
+    
+    
+//         })
+    
+//         const {
+//             salt,
+//             hashedPassword,
+//         } = hashPasswordWithSalt(password)
+    
+//         //console.log(hashPassword, salt)
+    
+//         connnection.query('insert into users (username, password, name, age, gender, email, salt) values(?, ?, ?, ?, ?, ?, ?)', [username, hashedPassword, name, age, gender, email, salt], (err, result) => {
+//             return res.status(200).json({
+//                 message: "Success"
+//             })
+//           })
+    
+//         return res.status(401).json({
+//             message: ' invalid credential'
+//         })
+//     })
+// })
 
 authRouter.post('/register', validate.validateRegister,async (req, res) => {
-    const{
-        username,
-        password,
-        name,
-        age,
-        email,
-        gender
-    }   = req.body
+    const authorizationHeader = req.headers.authorization
+    console.log(authorizationHeader)
+    const isValidToken = jsonwebtoken.verify(authorizationHeader, publicKey)
+    const id = isValidToken.id
 
-    await new Promise(() =>{
-        
-        connnection.query('select * from users where username = ?', [username], (err, result) => {
-            if(err) {
-                return res.status(500).json({
-                    message: "internal server error"
-                })
-            }
-    
-            const user = result[0]
-            if(user){
-                return res.status(400).json({
-                    message: "username is already taken"
-                })
-            }
-    
-    
-        })
-    
+    if(isValidToken){
+
         const {
-            salt,
-            hashedPassword,
-        } = hashPasswordWithSalt(password)
-    
-        //console.log(hashPassword, salt)
-    
-        connnection.query('insert into users (username, password, name, age, gender, email, salt) values(?, ?, ?, ?, ?, ?, ?)', [username, hashedPassword, name, age, gender, email, salt], (err, result) => {
+            username,
+            password,
+            name,
+            age,
+            email,
+            gender
+          } = req.body;
+        
+          try {
+            const existingUser = await connection2('users').where('username', username).first();
+            if (existingUser) {
+              return res.status(400).json({
+                message: "Username is already taken"
+              });
+            }
+        
+            const {
+              salt,
+              hashedPassword,
+            } = hashPasswordWithSalt(password);
+        
+            time = new Date(Date.now())
+            await connection2('users').insert({
+              username,
+              password: hashedPassword,
+              name,
+              age,
+              gender,
+              email,
+              salt,
+              createdAt: time,
+              createdBy: id
+            });
+        
             return res.status(200).json({
-                message: "Success"
-            })
-          })
-    
-        return res.status(401).json({
-            message: ' invalid credential'
-        })
-    })
-})
+              message: "Success"
+            });
+          } catch (err) {
+            console.log(err);
+            return res.status(500).json({
+              message: "Internal server error"
+            });
+          }
+    }
+    else{
+        return res.status(500).json({
+            message: "Sai SQL ROI"
+          });
+    }
+});
 
 authRouter.post('/login', async (req, res) => {
     const username = req.body.username
@@ -99,7 +162,8 @@ authRouter.post('/login', async (req, res) => {
                 const jwt = jsonwebtoken.sign({
                     username: user.username,
                     email: user.email,
-                    age: user.age
+                    age: user.age,
+                    id: user.id
                 }, privateKey, {
                     algorithm: 'RS256',
                     expiresIn: '1h'
@@ -117,8 +181,6 @@ authRouter.post('/login', async (req, res) => {
                     userPassword: user.password
                 })
             }
-        
-        
         })
     })
 
@@ -168,6 +230,74 @@ authRouter.get('/:id', async (req, res) => {
         })
     }
 })
+
+authRouter.put('/:id', validate.validate, (req, res) => {
+    const id = req.params.id
+    const authorizationHeader = req.headers.authorization
+    try{
+        const isValidToken = jsonwebtoken.verify(authorizationHeader, publicKey)
+        username = isValidToken.username
+        connnection.query(`update users set name = ?, gender = ?, age = ? where id = ?`, [req.body.name, req.body.gender, req.body.age, req.params.id],(err, result) => {
+          if(err){
+            return res.status(400).json({
+                message: err.message
+            })
+          }
+          res.status(204).json({
+            message: "Update success"
+          });
+        })
+    }
+    catch(error) {
+        return res.status(500).json({
+            message: error.message
+        })
+    }
+  })
+
+authRouter.delete('/:id', validate.validate, (req, res) => {
+    const id = req.params.id
+    const authorizationHeader = req.headers.authorization
+    try{
+        
+        connnection.query(`delete from users where id=?`, [req.params.id],(err, result) => {
+            if(err){
+            return res.status(400).json({
+                message: err.message
+            })
+            }
+            res.status(204).json({
+            message: "Delete success"
+            });
+        })
+    }
+    catch(error){
+        return res.status(500).json({
+            message: "Error"
+        })
+    }
+})
+
+authRouter.get('/search/:name', async (req, res) => {
+    //get username from query string
+    const name = req.params.name
+
+    await new Promise(() => {
+        connnection.query("select * from users where name like ?", ['%' + name + '%'],(err, result) => {
+            const list_items = pagination(result, 3, 3)
+            if(list_items.length >= 1)
+                return res.status(200).json({
+                    message: 'Found',
+                    list_items
+                })
+            else
+                return res.status(400).json({
+                    message: 'Out of range'
+                })
+        })
+    })
+})
+
 
 authRouter.post('/forgot-password', async(req, res) => {
     let email = req.query.email

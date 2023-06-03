@@ -8,6 +8,7 @@ userRouter.use(express.urlencoded({extended: true}));
 
 const validate = require('../middleware/validate')
 const connnection = require('../database/connection')
+const connection2 = require('../database/knexConnection')
 const auth = require('./auth')
 
 const {
