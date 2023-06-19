@@ -6,6 +6,7 @@ const userRoute = require('./routes/user')
 const loginRoute = require('./routes/login')
 const authRoute = require('./routes/auth')
 const endRoute = require('./routes/endpoint')
+const voteRouter = require('./routes/vote')
 
 // Dùng userRoute cho tất cả các route bắt đầu bằng '/users'
 app.use(express.json())
@@ -14,6 +15,7 @@ app.use('/users', userRoute);
 app.use('/endpoint', endRoute);
 //app.use('/login', loginRoute);
 app.use('/auth', authRoute);
+app.use('/vote', voteRouter)
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
