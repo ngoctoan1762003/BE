@@ -36,7 +36,7 @@ let users
 
     try{
         //public decrypt instead of secret key
-        const isValidToken = jsonwebtoken.verify(authorizationHeader, auth.publicKey)
+        const isValidToken = jsonwebtoken.verify(authorizationHeader, process.env.JWT_SECRET)
         console.log(JSON.stringify(isValidToken.username))
         if(isValidToken.username === username){
             let users

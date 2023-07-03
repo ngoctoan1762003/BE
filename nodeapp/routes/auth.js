@@ -71,7 +71,7 @@ const {
 authRouter.post('/register', validate.validateRegister,async (req, res) => {
     const authorizationHeader = req.headers.authorization
     console.log(authorizationHeader)
-    const isValidToken = jsonwebtoken.verify(authorizationHeader, publicKey)
+    const isValidToken = jsonwebtoken.verify(authorizationHeader, process.env.JWT_SECRET)
     const id = isValidToken.id
 
     if(isValidToken){
@@ -166,8 +166,8 @@ authRouter.post('/login', async (req, res) => {
                     email: user.email,
                     age: user.age,
                     id: user.id
-                }, privateKey, {
-                    algorithm: 'RS256',
+                }, process.env.JWT_SECRET, {
+                    
                     expiresIn: '1h'
                 })
         
@@ -188,41 +188,49 @@ authRouter.post('/login', async (req, res) => {
 
 })
 
-authRouter.get('/:id', async (req, res) => {
+authRouter.get('/:id',validate.canAccessBy("CanCreateUser", "CanReadUser") , async (req, res) => {
     //get username from query string
     const id = req.params.id
     //get token from request
     const authorizationHeader = req.headers.authorization //Bearer <Token>
     console.log(authorizationHeader)
-    console.log(publicKey.export({ type: 'spki', format: 'pem' }));
-    console.log(privateKey.export({ type: 'pkcs8', format: 'pem' }));
+    //console.log(process.env.JWT_SECRET.export({ type: 'spki', format: 'pem' }));
+    //console.log(privateKey.export({ type: 'pkcs8', format: 'pem' }));
 
     //const userToken = authorizationHeader.substring(7) //cut 7 first char to get token
     //console.log(userToken)
 
     try{
         //public decrypt instead of secret key
-        const isValidToken = jsonwebtoken.verify(authorizationHeader, publicKey)
+        const isValidToken = jsonwebtoken.verify(authorizationHeader, process.env.JWT_SECRET)
         username = isValidToken.username
         console.log(username)
         await new Promise(() => {
             let users
             let usernameRes
             connnection.query('select * from users where id=?', [req.params.id],(err, result) => {
+                if(err) {
+                    return res.status(500).json({
+                        message: err.message
+                    })
+                }
                 users = result[0];
                 usernameRes = users.username.toString()
                 console.log(users)
                 console.log(usernameRes)
-                if(usernameRes == username){
-                    return res.status(200).json({
-                        user: users
-                    })
-                }
-                else{
-                    return res.status(404).json({
-                        message: "Not authorized"
-                    })
-                }
+                // if(usernameRes == username){
+                //     return res.status(200).json({
+                //         user: users
+                //     })
+                // }
+                // else{
+                //     return res.status(404).json({
+                //         message: "Not authorized"
+                //     })
+                // }
+                return res.status(200).json({
+                    user: users
+                })
             })
         })
     }
@@ -237,7 +245,7 @@ authRouter.put('/:id', validate.validate, (req, res) => {
     const id = req.params.id
     const authorizationHeader = req.headers.authorization
     try{
-        const isValidToken = jsonwebtoken.verify(authorizationHeader, publicKey)
+        const isValidToken = jsonwebtoken.verify(authorizationHeader, process.env.JWT_SECRET)
         username = isValidToken.username
         connnection.query(`update users set name = ?, gender = ?, age = ? where id = ?`, [req.body.name, req.body.gender, req.body.age, req.params.id],(err, result) => {
           if(err){
@@ -391,55 +399,6 @@ authRouter.post('/reset-password', async (req, res) => {
     
 })
 
-authRouter.post('/vote/:idoption', (req, res) => {
-    const authorizationHeader = req.headers.authorization;
-    console.log(authorizationHeader);
-    
-    try{    
-        const isValidToken = jsonwebtoken.verify(authorizationHeader, publicKey);
-
-        connnection.query('insert into user_option(option_fk_id, user_fk_id) values(?, ?)', [req.params.idoption, isValidToken.id], (err, result) => {
-            if(err){
-                return res.status(500).json({
-                    message: err.message
-                })
-            }
-            return res.status(202).json({
-                message: "added submit"
-            })
-        })
-    }
-    catch(err){
-        return res.status(500).json({
-            message: err.message   
-        })
-    }
-})
-
-authRouter.delete('/vote/:idoption', (req, res) => {
-    const authorizationHeader = req.headers.authorization;
-    console.log(authorizationHeader);
-    
-    try{    
-        const isValidToken = jsonwebtoken.verify(authorizationHeader, publicKey);
-
-        connnection.query('delete from user_option where option_fk_id = ? and user_fk_id = ?', [req.params.idoption, isValidToken.id], (err, result) => {
-            if(err){
-                return res.status(500).json({
-                    message: err.message
-                })
-            }
-            return res.status(202).json({
-                message: "delete vote submit"
-            })
-        })
-    }
-    catch(err){
-        return res.status(500).json({
-            message: err.message   
-        })
-    }
-})
 
 module.exports = authRouter;
 
