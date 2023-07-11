@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<style>
+    .box{
+        background-color: brown;
+        color: white;
+        border: 0;
+        margin: 20px;
+    }
+    .selected-box{
+        background-color: green;
+    }
+    .img{
+        object-fit: fill; 
+        overflow: hidden;
+
+    }
+    .gridimg{
+        width: calc((100% - 40px)/2);
+    }
+</style>
+<body>
+    <div>
+        <div id="app">
+            <button @click="ChangeGrid()" id="Grid">Grid</button>
+            <button @click="ChangeList()" id="List">List</button>
+            <div class="content" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 20px; margin-top: 50px;">
+                <img v-for="(img, index) in attribute" :key="user"  :src=`${img}` class="img">
+            </div>
+        </div>
+    </div>
+    <script>
+        const { createApp } = Vue
+        const app = createApp({
+            data() {
+                return {
+                    attribute: [
+                        'https://gmedia.playstation.com/is/image/SIEPDC/genshin-impact-hero-02-ps4-en-13oct20?$native$',
+                        'https://th.bing.com/th/id/R.99e4c2b57d532b51bd8095a9ad01aaf3?rik=lRgGLJ3cVgufeQ&pid=ImgRaw&r=0',
+                        'https://th.bing.com/th/id/OIP.OfELG2X0s2WYik1XZ-jJbQHaDu?pid=ImgDet&w=1181&h=593&rs=1',
+                        'https://www.hdwallpapers.in/download/jean_dandelion_breeze_genshin_impact_4k_hd_games-HD.jpg'
+                    ],
+                    pre: null
+                }
+            },
+            methods: {
+                ChangeGrid(){
+                    var list = document.getElementsByClassName('img');
+                    for(i = 0; i < list.length; i++){
+                        if(this.pre === 'grid'){
+                            list[i].classList.toggle('gridimg')
+                            this.pre = 'grid'
+                        }
+                        else{
+                            if(!list[i].classList.contains('gridimg'))
+                                list[i].classList.add('gridimg');
+                            document.getElementById('List').classList.toggle('selected-box')
+                            document.getElementById('Grid').classList.toggle('selected-box')
+
+                            this.pre = 'grid'
+                        }
+                    }
+                },
+                ChangeList(){
+                    var list = document.getElementsByClassName('img');
+                    for(i = 0; i < list.length; i++){
+                        if(this.pre === 'list'){
+                            list[i].classList.toggle('gridimg')
+                            this.pre = 'list'
+                        }
+                        else{
+                            if(list[i].classList.contains('gridimg'))
+                                list[i].classList.remove('gridimg');
+                            this.pre = 'list'
+                        }
+                    }
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+
+</html>

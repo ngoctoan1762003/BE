@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<style>
+    .box{
+        background-color: brown;
+        color: white;
+        border: 0;
+        padding: 10px;
+        margin: 20px;
+        height: 60px;
+    }
+    .selected-box.box{
+        background-color: green;
+        color: white;
+        border: 0;
+        padding: 10px;
+        height: 60px;
+    }
+    .price::before{
+        content: '$';
+    }
+</style>
+<body>
+    <div style="background-color: cadetblue; padding: 20px;">
+        <div style="text-align: center; color: white; font-size: 20px; font-weight:600; margin: 20px;">SERVICES</div>
+        <div id="app" style="display: flex; gap: 1px; flex-direction:column;">
+            <div style="display: flex; justify-content: center; gap: 2px; flex-direction:column;">
+                <div v-for="(user, index) in attribute" :key="user" style="display:flex; flex-direction:column; gap: 10px;">
+                    <button @click="Change(user, index)" class="box" :id=`${index}`>
+                        <div style="display: flex; justify-content:space-between">
+                            <div>
+                                {{user.name}}
+                            </div>
+                            <div class="price">
+                                {{user.price}}
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            <div style="border-bottom: 1px; color: white; height: 2px;"></div>
+            <div style="display: flex; justify-content:space-between; padding: 10px; margin: 20px;">
+                <div style="color: white;">TOTAL: </div>
+                <div style="color: white;" class="price">{{price}}</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const { createApp } = Vue
+        const app = createApp({
+            data() {
+                return {
+                    attribute: [
+                        {name: 'WEB DEVELOPMENT', price: 300},
+                        {name: 'DESIGN', price: 400},
+                        {name: 'INTEGRATION', price: 250},
+                        {name: 'TRAINING', price: 220}
+                    ],
+                    price: 0
+                }
+            },
+            methods: {
+                Change(att, index){
+                    if(document.getElementById(index).classList.contains('selected-box')) this.price -= att.price;
+                    else this.price += att.price
+                    document.getElementById(index).classList.toggle('selected-box');
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+
+</html>

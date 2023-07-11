@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<style>
+    .box{
+        background-color: brown;
+        color: white;
+        border: 0;
+        padding: 5px;
+    }
+    .selected-box.box{
+        background-color: green;
+        color: white;
+        border: 0;
+        padding: 5px;
+    }
+</style>
+<body>
+    <div id="app" style="display: flex; flex-direction:column; gap: 10px">
+        <div style="display: flex; justify-content: center; gap: 2px;">
+            <div v-for="(user, index) in attribute" :key="user" style="display:flex; gap: 10px;">
+                <button @click="Change(user, index)" class="box" :id=`${index}`>{{user}}</button>
+            </div>
+        </div>
+        <div style="display: flex; justify-content:center; ">you are choosing <span style="border: 1px; color:white; background-color:palegoldenrod; margin-left: 5px;">{{choosing}}</span></div>
+    </div>
+    <script>
+        const { createApp } = Vue
+        const app = createApp({
+            data() {
+                return {
+                    attribute: [
+                        'Home',
+                        'About',
+                        'Services',
+                        'Contact'
+                    ],
+                    choosing: 'Home',
+                    pre: null
+                }
+            },
+            methods: {
+                Change(att, index){
+                    if(this.pre!=null) document.getElementById(this.pre).classList.toggle('selected-box');
+                    this.choosing = att;
+                    document.getElementById(index).classList.toggle('selected-box');
+                    this.pre = index;
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+
+</html>
