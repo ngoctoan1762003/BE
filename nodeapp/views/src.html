@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+    </head>
+    <body>
+        <div id="app">
+            <p>count: {{ count }}</p>
+            <p>{{isEven}}</p>
+            <button v-on:click="increment()">count + 1</button>
+    </div>
+    </body>
+        <script>
+            const {createApp} = Vue
+            const app = createApp({
+                el: '#app',                 
+                data() {
+                    return{
+                        count: 0,
+                        isEven: true
+                    }                    
+                },
+                methods: {
+                    increment() {
+                        this.count++;
+                        this.isEven = this.count % 2 === 0 ? true : false
+                    }
+                },
+
+            }).mount('#app')
+            </script>
+    
+</html>

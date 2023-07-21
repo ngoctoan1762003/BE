@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<style>
+    .red{
+        color: red;
+    }
+    .blue{
+        color: blue;
+    }
+</style>
+<body>
+    <div id="app">
+        
+        <!-- <input type="text" v-model="message">
+        <h1>{{ message }}</h1>
+        <h1>{{ CreateVar() }}</h1> -->
+
+        <!-- --------------------------------------------2 ways binding----------------------------------------- -->
+        <!-- <button @click="CreateUser()">Create new user</button>
+        <div v-for="(user, index) in users" :key="user" style="display:flex; gap: 10px;">
+            <h1>{{ index }}</h1>
+            <h1>{{ user.name }}</h1>
+            <h1>{{ user.age }}</h1>
+        </div> -->
+
+        <!-- --------------------------------------------If else----------------------------------------- -->
+        <!-- <button @click="TrueOrFalse = !TrueOrFalse">click</button>
+        <h1 v-if="TrueOrFalse === true">
+            Dung roi
+        </h1>
+        <h1 v-else >
+            Sai roi
+        </h1>
+        <article v-html="myBlogHtml"></article> -->
+
+        <!-- <button @click="TrueOrFalse = !TrueOrFalse">click</button>
+
+        <p :class="{
+            red: TrueOrFalse,
+            blue: !TrueOrFalse
+        }">
+            {{ message }}
+        </p> -->
+
+        <select v-model="bestFramework">
+            <option value="VueJS">VueJS</option>
+            <option value="ReactJS">ReactJS</option>
+            <option value="Angular">Angular</option>
+        </select>
+        <h1 v-if="bestFramework === 'VueJS'">Vue iz za bezt</h1>
+        <h1 v-else-if="bestFramework === 'ReactJS'">React iz za bezt</h1>
+        <h1 v-else>Angular iz za bezt</h1>
+    </div>
+    <script>
+        const { createApp } = Vue
+        const app = createApp({
+            data() {
+                return {
+                    bestFramework: 'VueJS',
+                    TrueOrFalse: true,
+                    message: 'Hello Vue.js',
+                    users: [
+                        { name: 'John Doe', age: 30 },
+                        { name: 'Jane Doe', age: 20 },
+                        { name: 'John Smith', age: 10 }
+                    ],
+                    myBlogHtml:`
+                        <h1 class="red">Haha</h1>
+                    `
+                }
+            },
+            methods: {
+                CreateVar() {
+                    var bien3 = 'hehe';
+                    return bien3;
+                },
+                CreateUser() {
+                    this.users.push({ name: 'New user', age: 20 })
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+
+</html>
