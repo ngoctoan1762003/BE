@@ -19,11 +19,41 @@
             </div>
             <hr>
             <div class="flex flex-col gap-3">
-                <input type="text" class="border-2 p-2 rounded-md" placeholder="Email">
-                <input type="text" class="border-2 p-2 rounded-md" placeholder="Email">
-                <input type="text" class="border-2 p-2 rounded-md" placeholder="Email">
-                <input type="text" class="border-2 p-2 rounded-md" placeholder="Email">
-                <input type="text" class="border-2 p-2 rounded-md" placeholder="Email">
+                <input type="text" class="border-2 px-6 py-4 rounded-md" placeholder="Email">
+                <input type="text" class="border-2 px-6 py-4 rounded-md" placeholder="Email">
+                <input type="text" class="border-2 px-6 py-4 rounded-md" placeholder="Email">
+                <div class="border-2 rounded-md px-6 py-4">
+                    <div class="flex justify-between">
+                        <div>HTML</div>
+                        <input type="checkbox" id="html" name="fav_language" value="HTML">
+                    </div>
+                    <br>
+                    <div class="flex justify-between">
+                        <div for="css">CSS</div>
+                        <input type="checkbox" id="css" name="fav_language" value="CSS">
+                    </div>
+                    <br>
+                    <div class="flex justify-between">
+                        <div for="javascript">JavaScript</div>
+                        <input type="checkbox" id="javascript" name="fav_language" value="JavaScript">
+                    </div>
+                </div>
+                <div class="border-2 rounded-md px-6 py-4">
+                    <div class="flex justify-between">
+                        <div>Male</div>
+                        <input type="radio" id="html" name="fav_language" value="HTML">
+                    </div>
+                    <br>
+                    <div class="flex justify-between">
+                        <div for="css">Female</div>
+                        <input type="radio" id="css" name="fav_language" value="CSS">
+                    </div>
+                    <br>
+                    <div class="flex justify-between">
+                        <div for="javascript">Apache Helikopter</div>
+                        <input type="radio" id="javascript" name="fav_language" value="JavaScript">
+                    </div>
+                </div>
             </div>
             <div class="flex gap-4">
                 <button class="bg-green-500 text-white p-2 rounded-md font-semibold">SAVE CHANGES</button>

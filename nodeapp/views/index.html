@@ -4,66 +4,69 @@
         <script src="https://cdn.tailwindcss.com"></script>
     </head>
     <body>
-        <div class="p-10" id="app">
-            <div class="flex justify-between items-center">
-                <input class="border-2 border-gray-200 text-gray-200 rounded-md pl-5 w-60 h-12 flex items-center" placeholder="Find User" v-model="searchQuery">
-                <button class="bg-sky-700 p-3 rounded-md text-white font-medium h-12 before:content" @click="addNewUser()">
-                    Create New
-                </button>
-            </div>
+        <div id="app">
+            <div  class="p-10" @click="clickOutSide()">
 
-            <table class="mt-10 w-full">
-                <tr class="border-b-2">
-                    <th class="p-2 text-left w-[20%]">USER</th>
-                    <th class="p-2 text-left w-[10%]">ROLE</th>
-                    <th class="p-2 text-left w-[15%]">STATUS</th>
-                    <th class="p-2 text-left w-[20%]">LAST ACTIVITY</th>
-                    <th class="p-2 text-left w-[20%]">JOIN DATE</th>
-                    <th class="p-2 text-left w-[10%]">ACTIONS</th>
-                </tr>
-                <tr  v-for="(user, id) in filteredUsers" :key="user" class="border-b-2">
-                    <td class="flex font-normal gap-2 items-center p-4">
-                        <div class="flex items-center">
-                            <img :src=`${user.avatar}` alt="" class="rounded-full aspect-square object-cover max-w-[50px]">
-                        </div>
-                        <div class="w-full">
-                            <div class="text-left font-normal w-full text-xs">{{user.name}}</div>
-                            <div class="text-left font-normal w-full text-xs">{{user.email}}</div>
-                        </div>
-                    </td>
-                    <td class="p-4 text-xs text-left font-normal w-[10%] items-center">{{user.role}}</td>
-                    <td class="p-4 text-xs text-left font-normal w-[15%] rounded-md text-white items-center" v-if="user.status === 'suspended'">
-                        <span class="bg-red-500 p-1 rounded-md">
-                        {{user.status}}
-                        </span>
-                    </td>
-                    <td class="p-4 text-xs text-left font-normal w-[15%] rounded-md text-white items-center" v-else>
-                        <span class="bg-green-500 p-1 rounded-md">
-                            {{user.status}}
-                        </span>
-                    </td>
-                    <td class="p-4 text-xs text-left font-normal w-[20%] items-center">{{user.lastActivity}}</td>
-                    <td class="p-4 text-xs text-left font-normal w-[10%] items-center">{{user.joinDate}}</td>
-                    <td class="relative">
-                        <button type="button"  @click="showPopup(user.id)" class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white rounded-md bg-gray-500 hover:bg-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"> 
-                            Actions 
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-2 -mr-1 text-violet-200 hover:text-violet-100" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        <div :id="'action-' + user.id" data-display="none" class="popup hidden absolute right-0 w-32 mt-1 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 focus:outline-none">
-                            <div class="px-1 py-1 popup">
-                                <button class="popup hover:bg-gray-400 hover:text-white text-gray-900 group flex rounded-md items-center w-full px-2 py-2 text-sm" @click="showPopup(user.id)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="popup w-5 h-5 mr-2 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                                    Edit 
-                                </button>
-                                <button class="popup hover:bg-red-400 hover:text-white text-gray-900 group flex rounded-md items-center w-full px-2 py-2 text-sm" @click="onDelete(user.id)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="popup w-5 h-5 mr-2 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> 
-                                    Delete 
-                                </button>
+                <div class="flex justify-between items-center">
+                    <input class="border-2 border-gray-200 text-gray-200 rounded-md pl-5 w-60 h-12 flex items-center" placeholder="Find User" v-model="searchQuery">
+                    <button class="bg-sky-700 p-3 rounded-md text-white font-medium h-12 before:content" @click="addNewUser()">
+                        Create New
+                    </button>
+                </div>
+    
+                <table class="mt-10 w-full">
+                    <tr class="border-b-2">
+                        <th class="p-2 text-left w-[20%]">USER</th>
+                        <th class="p-2 text-left w-[10%]">ROLE</th>
+                        <th class="p-2 text-left w-[15%]">STATUS</th>
+                        <th class="p-2 text-left w-[20%]">LAST ACTIVITY</th>
+                        <th class="p-2 text-left w-[20%]">JOIN DATE</th>
+                        <th class="p-2 text-left w-[10%]">ACTIONS</th>
+                    </tr>
+                    <tr  v-for="(user, id) in filteredUsers" :key="user" class="border-b-2">
+                        <td class="flex font-normal gap-2 items-center p-4">
+                            <div class="flex items-center">
+                                <img :src=`${user.avatar}` alt="" class="rounded-full aspect-square object-cover max-w-[50px]">
                             </div>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+                            <div class="w-full">
+                                <div class="text-left font-normal w-full text-xs">{{user.name}}</div>
+                                <div class="text-left font-normal w-full text-xs">{{user.email}}</div>
+                            </div>
+                        </td>
+                        <td class="p-4 text-xs text-left font-normal w-[10%] items-center">{{user.role}}</td>
+                        <td class="p-4 text-xs text-left font-normal w-[15%] rounded-md text-white items-center" v-if="user.status === 'suspended'">
+                            <span class="bg-red-500 p-1 rounded-md">
+                            {{user.status}}
+                            </span>
+                        </td>
+                        <td class="p-4 text-xs text-left font-normal w-[15%] rounded-md text-white items-center" v-else>
+                            <span class="bg-green-500 p-1 rounded-md">
+                                {{user.status}}
+                            </span>
+                        </td>
+                        <td class="p-4 text-xs text-left font-normal w-[20%] items-center">{{user.lastActivity}}</td>
+                        <td class="p-4 text-xs text-left font-normal w-[10%] items-center">{{user.joinDate}}</td>
+                        <td class="relative">
+                            <button type="button"  @click.stop="showPopup(user.id)" class="inline-flex justify-center w-full px-4 py-2 text-sm font-medium text-white rounded-md bg-gray-500 hover:bg-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"> 
+                                Actions 
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-2 -mr-1 text-violet-200 hover:text-violet-100" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div :id="'action-' + user.id" data-display="none" :class="user.isHidden" class="popup absolute right-0 w-32 mt-1 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 focus:outline-none">
+                                <div class="px-1 py-1 popup">
+                                    <button class="popup hover:bg-gray-400 hover:text-white text-gray-900 group flex rounded-md items-center w-full px-2 py-2 text-sm" @click="showPopup(user.id)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="popup w-5 h-5 mr-2 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                        Edit 
+                                    </button>
+                                    <button class="popup hover:bg-red-400 hover:text-white text-gray-900 group flex rounded-md items-center w-full px-2 py-2 text-sm" @click="onDelete(user.id)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="popup w-5 h-5 mr-2 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg> 
+                                        Delete 
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </body>
     <script>
@@ -112,18 +115,19 @@
             computed:{
                 filteredUsers() {
                     return this.users.filter((user) => {
-                        return (
-                            user.name
-                                .toLowerCase()
-                                .includes(this.searchQuery.toLowerCase()) ||
-                            user.email
-                                .toLowerCase()
-                                .includes(this.searchQuery.toLowerCase())
-                        );
+                        for(key in user){
+                            if(!user[key]) continue
+                            if(user[key].toString().toLowerCase().includes(this.searchQuery)) return user
+                        }
+
                     });
                 },
             },
             methods: {
+                clickOutSide(){
+                    console.log('oke')
+                    this.users.forEach(u => u.isHidden = 'hidden')
+                },
                 addNewUser(){
                     this.users.push({
                         id: this.users.length,
@@ -137,39 +141,37 @@
                         joinDate: "2023-06-16T02:56:02.677Z",
                     })
                 },
-                closeAllPopup() {
-                    var popups = document.querySelectorAll('td.relative > div');
-                    popups.forEach(p => p.style.display = "none");
+                closeAllPopup(index) {
+                    // var popups = document.querySelectorAll('td.relative > div');
+                    // popups.forEach(p => p.style.display = "none");
+                    this.users.forEach(u =>{ 
+                    if(index !== u.id)
+                    u.isHidden = 'hidden'})
                 },
                 autoClosePopup(e){
                     if (e.target.classList.contains('popup')) return;
                     this.closeAllPopup()
                 },
                 showPopup(id) {
-                    this.closeAllPopup()
-                    var popup = document.querySelector("#action-" + id)
-                    if (popup.dataset.display == "none") {
-                        popup.style.display = "block"
-                        popup.dataset.display = "block"
-                    } else {
-                        popup.style.display = "none"
-                        popup.dataset.display = "none"
-                    }
-
-                },
-                showPopup2(id) {
-                    this.closeAllPopup()
-                    this.userData.map(u=>{
+                    // this.closeAllPopup()
+                    // var popup = document.querySelector("#action-" + id)
+                    // if (popup.dataset.display == "none") {
+                    //     popup.style.display = "block"
+                    //     popup.dataset.display = "block"
+                    // } else {
+                    //     popup.style.display = "none"
+                    //     popup.dataset.display = "none"
+                    // }
+                    this.closeAllPopup(id)
+                    this.users.map(u=>{
                         if(u.id === id){
-                        if(u.isShowPopup==='block'){
-                            u.isShowPopup='hidden'
-                            
-                        }else{
-                            u.isShowPopup='block'
+                            if(u.isHidden === 'hidden'){
+                                u.isHidden='block'
+                            }else{
+                                u.isHidden='hidden'
+                            }
                         }
-				    }
-			    }
-			)
+				    })
                 },
                 onDelete(id) {
                     this.filterUser(id);
