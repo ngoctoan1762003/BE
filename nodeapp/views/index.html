@@ -70,6 +70,117 @@
         </div>
     </body>
     <script>
-        
+        const { createApp } = Vue
+        const app = createApp({
+            data() {
+                return {
+                    searchQuery: "",
+                    users: [
+                    {
+                        id: 1,
+                        isHidden: 'hidden',
+                        name: "John Doe",
+                        email: "johnDoe@gmail.com",
+                        avatar: "https://i.pravatar.cc/300",
+                        role: "admin",
+                        status: "active",
+                        lastActivity: "1 min ago",
+                        joinDate: "2023-06-16T02:56:02.677Z",
+                    },
+                    {
+                        id: 2,
+                        isHidden: 'hidden',
+                        name: "John User",
+                        email: "johnDoe@gmail.com",
+                        avatar: "https://i.pravatar.cc/300",
+                        role: "user",
+                        status: "suspended",
+                        lastActivity: "1 min ago",
+                        joinDate: "2023-06-16T02:56:02.677Z",
+                    },
+                    {
+                        id: 3,
+                        isHidden: 'hidden',
+                        name: "John Admin",
+                        email: "johnDoe@gmail.com",
+                        avatar: "https://i.pravatar.cc/300",
+                        role: "admin",
+                        status: "active",
+                        lastActivity: "1 min ago",
+                        joinDate: "2023-06-16T02:56:02.677Z",
+                    },
+                    ],
+                }
+            },
+            computed:{
+                filteredUsers() {
+                    return this.users.filter((user) => {
+                        for(key in user){
+                            if(!user[key]) continue
+                            if(user[key].toString().toLowerCase().includes(this.searchQuery)) return user
+                        }
+
+                    });
+                },
+            },
+            methods: {
+                clickOutSide(){
+                    console.log('oke')
+                    this.users.forEach(u => u.isHidden = 'hidden')
+                },
+                addNewUser(){
+                    this.users.push({
+                        id: this.users.length,
+                        isHidden: 'hidden',
+                        name: "John Admin",
+                        email: "johnDoe@gmail.com",
+                        avatar: "https://i.pravatar.cc/300",
+                        role: "admin",
+                        status: "active",
+                        lastActivity: "1 min ago",
+                        joinDate: "2023-06-16T02:56:02.677Z",
+                    })
+                },
+                closeAllPopup(index) {
+                    // var popups = document.querySelectorAll('td.relative > div');
+                    // popups.forEach(p => p.style.display = "none");
+                    this.users.forEach(u =>{ 
+                    if(index !== u.id)
+                    u.isHidden = 'hidden'})
+                },
+                autoClosePopup(e){
+                    if (e.target.classList.contains('popup')) return;
+                    this.closeAllPopup()
+                },
+                showPopup(id) {
+                    // this.closeAllPopup()
+                    // var popup = document.querySelector("#action-" + id)
+                    // if (popup.dataset.display == "none") {
+                    //     popup.style.display = "block"
+                    //     popup.dataset.display = "block"
+                    // } else {
+                    //     popup.style.display = "none"
+                    //     popup.dataset.display = "none"
+                    // }
+                    this.closeAllPopup(id)
+                    this.users.map(u=>{
+                        if(u.id === id){
+                            if(u.isHidden === 'hidden'){
+                                u.isHidden='block'
+                            }else{
+                                u.isHidden='hidden'
+                            }
+                        }
+				    })
+                },
+                onDelete(id) {
+                    this.filterUser(id);
+                    this.closeAllPopup();
+                },
+                filterUser(id) {
+                    this.users = this.users.filter(u => u.id !== id)
+                }
+            },
+        }).mount('#app')
     </script>
 </html>
