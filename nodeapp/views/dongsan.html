@@ -21,7 +21,15 @@
             <div class="flex flex-col gap-3">
                 <input type="text" class="border-2 px-6 py-4 rounded-md" placeholder="Email">
                 <input type="text" class="border-2 px-6 py-4 rounded-md" placeholder="Email">
-                <input type="text" class="border-2 px-6 py-4 rounded-md" placeholder="Email">
+                <select class="border-2 px-6 py-4 rounded-md">
+                    <option value="">--Hãy chọn một ngôn ngữ lập trình--</option>
+                    <option value="csharp">C#</option>
+                    <option value="cpp">C++</option>
+                    <option value="php">PHP</option>
+                    <option value="ruby">Ruby</option>
+                    <option value="js">Javascript</option>
+                    <option value="dart">Dart</option>
+                </select>
                 <div class="border-2 rounded-md px-6 py-4">
                     <div class="flex justify-between">
                         <div>HTML</div>
@@ -62,3 +70,46 @@
         </div>
     </body>
 </html>
+
+<script>
+    const app = Vue.createApp({
+        data() {
+            return {
+                avatarUrl: 'https://i.pravatar.cc/300',
+                email: '',
+                username: '',
+                password: '',
+                languages: {
+                    html: false,
+                    css: false,
+                    javascript: false,
+                },
+                gender: 'Male',
+            };
+        },
+        methods: {
+            uploadPhoto() {
+                // Your upload photo logic here
+                // For simplicity, let's just update the avatar URL to a new random image
+                this.avatarUrl = `https://i.pravatar.cc/300?cache=${Math.random()}`;
+            },
+            saveChanges() {
+                // Your save changes logic here
+            },
+            resetForm() {
+                // Reset the form fields and data
+                this.email = '';
+                this.username = '';
+                this.password = '';
+                this.languages = {
+                    html: false,
+                    css: false,
+                    javascript: false,
+                };
+                this.gender = 'Male';
+            },
+        },
+    });
+
+    const vm = app.mount('#app');
+</script>
